@@ -1,8 +1,27 @@
 package com.flansmod.common.driveables;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.flansmod.api.IControllable;
+import com.flansmod.api.IExplodeable;
+import com.flansmod.client.EntityCamera;
+import com.flansmod.client.FlansModClient;
+import com.flansmod.client.debug.EntityDebugVector;
+import com.flansmod.client.handlers.KeyInputHandler;
+import com.flansmod.common.FlansMod;
+import com.flansmod.common.RotatedAxes;
+import com.flansmod.common.driveables.DriveableType.ParticleEmitter;
+import com.flansmod.common.driveables.mechas.ContainerMechaInventory;
+import com.flansmod.common.guns.*;
+import com.flansmod.common.guns.raytracing.FlansModRaytracer.BulletHit;
+import com.flansmod.common.guns.raytracing.FlansModRaytracer.DriveableHit;
+import com.flansmod.common.network.PacketDriveableDamage;
+import com.flansmod.common.network.PacketDriveableKey;
+import com.flansmod.common.network.PacketDriveableKeyHeld;
+import com.flansmod.common.network.PacketPlaySound;
+import com.flansmod.common.parts.EnumPartCategory;
+import com.flansmod.common.parts.ItemPart;
+import com.flansmod.common.parts.PartType;
+import com.flansmod.common.teams.TeamsManager;
+import com.flansmod.common.vector.Vector3f;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -17,14 +36,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.RayTraceResult.Type;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -34,43 +50,12 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import com.flansmod.api.IControllable;
-import com.flansmod.api.IExplodeable;
-import com.flansmod.client.EntityCamera;
-import com.flansmod.client.FlansModClient;
-import com.flansmod.client.debug.EntityDebugVector;
-import com.flansmod.client.handlers.KeyInputHandler;
-import com.flansmod.common.FlansMod;
-import com.flansmod.common.RotatedAxes;
-import com.flansmod.common.driveables.DriveableType.ParticleEmitter;
-import com.flansmod.common.driveables.mechas.ContainerMechaInventory;
-import com.flansmod.common.guns.BulletType;
-import com.flansmod.common.guns.EnumFireMode;
-import com.flansmod.common.guns.EnumSpreadPattern;
-import com.flansmod.common.guns.FireableGun;
-import com.flansmod.common.guns.FiredShot;
-import com.flansmod.common.guns.GunType;
-import com.flansmod.common.guns.InventoryHelper;
-import com.flansmod.common.guns.ItemBullet;
-import com.flansmod.common.guns.ItemShootable;
-import com.flansmod.common.guns.ShootBulletHandler;
-import com.flansmod.common.guns.ShootableType;
-import com.flansmod.common.guns.ShotHandler;
-import com.flansmod.common.guns.raytracing.FlansModRaytracer.BulletHit;
-import com.flansmod.common.guns.raytracing.FlansModRaytracer.DriveableHit;
-import com.flansmod.common.network.PacketDriveableDamage;
-import com.flansmod.common.network.PacketDriveableKey;
-import com.flansmod.common.network.PacketDriveableKeyHeld;
-import com.flansmod.common.network.PacketPlaySound;
-import com.flansmod.common.parts.EnumPartCategory;
-import com.flansmod.common.parts.ItemPart;
-import com.flansmod.common.parts.PartType;
-import com.flansmod.common.teams.TeamsManager;
-import com.flansmod.common.vector.Vector3f;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.flansmod.common.util.BlockUtil.destroyBlock;
 
-public abstract class EntityDriveable extends Entity implements IControllable, IExplodeable, IEntityAdditionalSpawnData
+public abstract class  EntityDriveable extends Entity implements IControllable, IExplodeable, IEntityAdditionalSpawnData
 {
 	public boolean syncFromServer = true;
 	/** Ticks since last server update. Use to smoothly transition to new position */
@@ -484,6 +469,24 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 					shoot(false);
 					return true;
 				}
+			case 25:
+			{
+				EntitySeat[] vehicleSeats = getSeats();
+				EntitySeat playerSeat = getSeat(player);
+				EnumHand hand = player.getActiveHand();
+				if(vehicleSeats.length > (playerSeat.getExpectedSeatID() + 1))
+				{
+					int newSeatID = playerSeat.getExpectedSeatID() + 1;
+					EntitySeat newSeat = getSeat(newSeatID);
+					newSeat.processInitialInteract(player, hand);
+				}
+				else
+				{
+					EntitySeat newSeat = getSeat(0);
+					newSeat.processInitialInteract(player, hand);
+				}
+				return true;
+			}
 		}
 		return false;
 	}
@@ -528,6 +531,14 @@ public abstract class EntityDriveable extends Entity implements IControllable, I
 			case 18:
 			{
 				togglePerspective();
+				return true;
+			}
+			case 25:
+			{
+				if(isOnEvent)
+				{
+					FlansMod.getPacketHandler().sendToServer(new PacketDriveableKey(key));
+				}
 				return true;
 			}
 			default:

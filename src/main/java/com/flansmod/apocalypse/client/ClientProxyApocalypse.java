@@ -1,15 +1,21 @@
 package com.flansmod.apocalypse.client;
 
-import org.lwjgl.opengl.GL11;
-
+import com.flansmod.apocalypse.client.model.*;
+import com.flansmod.apocalypse.common.CommonProxyApocalypse;
+import com.flansmod.apocalypse.common.FlansModApocalypse;
+import com.flansmod.apocalypse.common.blocks.BlockSulphuricAcid;
+import com.flansmod.apocalypse.common.blocks.TileEntityPowerCube;
+import com.flansmod.apocalypse.common.entity.*;
+import com.flansmod.client.FlansModClient;
+import com.flansmod.client.handlers.FlansModResourceHandler;
+import com.flansmod.client.model.RenderMecha;
+import com.flansmod.client.util.WorldRenderer;
+import com.flansmod.common.FlansMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -24,30 +30,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-
-import com.flansmod.apocalypse.client.model.RenderSkullDrone;
-import com.flansmod.apocalypse.client.model.RenderFakePlayer;
-import com.flansmod.apocalypse.client.model.RenderNukeDrop;
-import com.flansmod.apocalypse.client.model.RenderPowerCube;
-import com.flansmod.apocalypse.client.model.RenderSkullBoss;
-import com.flansmod.apocalypse.client.model.RenderSurvivor;
-import com.flansmod.apocalypse.client.model.RenderTeleporter;
-import com.flansmod.apocalypse.common.CommonProxyApocalypse;
-import com.flansmod.apocalypse.common.FlansModApocalypse;
-import com.flansmod.apocalypse.common.blocks.BlockSulphuricAcid;
-import com.flansmod.apocalypse.common.blocks.TileEntityPowerCube;
-import com.flansmod.apocalypse.common.entity.EntityAIMecha;
-import com.flansmod.apocalypse.common.entity.EntitySkullDrone;
-import com.flansmod.apocalypse.common.entity.EntityFakePlayer;
-import com.flansmod.apocalypse.common.entity.EntityNukeDrop;
-import com.flansmod.apocalypse.common.entity.EntitySkullBoss;
-import com.flansmod.apocalypse.common.entity.EntitySurvivor;
-import com.flansmod.apocalypse.common.entity.EntityTeleporter;
-import com.flansmod.client.FlansModClient;
-import com.flansmod.client.handlers.FlansModResourceHandler;
-import com.flansmod.client.model.RenderMecha;
-import com.flansmod.client.util.WorldRenderer;
-import com.flansmod.common.FlansMod;
 
 public class ClientProxyApocalypse extends CommonProxyApocalypse
 {

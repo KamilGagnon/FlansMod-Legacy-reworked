@@ -1,30 +1,5 @@
 package com.flansmod.apocalypse.common;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import net.minecraft.block.Block;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionType;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.tileentity.TileEntityBrewingStand;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-
 import com.flansmod.common.TileEntityItemHolder;
 import com.flansmod.common.driveables.DriveableType;
 import com.flansmod.common.driveables.EnumPlaneMode;
@@ -45,6 +20,28 @@ import com.flansmod.common.teams.PlayerClass;
 import com.flansmod.common.teams.Team;
 import com.flansmod.common.tools.ToolType;
 import com.flansmod.common.types.EnumType;
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraft.potion.PotionType;
+import net.minecraft.potion.PotionUtils;
+import net.minecraft.tileentity.TileEntityBrewingStand;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class FlansModLootGenerator
 {
@@ -307,13 +304,13 @@ public class FlansModLootGenerator
 	
 	public DriveableType getRandomDriveable(Random rand)
 	{
-		switch(rand.nextInt(5))
+		switch(rand.nextInt(3))
 		{
 			case 0: if(cars.size() > 0) return cars.get(rand.nextInt(cars.size()));
 			case 1: if(tanks.size() > 0) return tanks.get(rand.nextInt(tanks.size()));
-			case 2: if(planes.size() > 0) return planes.get(rand.nextInt(planes.size()));
-			case 3: if(helicopters.size() > 0) return helicopters.get(rand.nextInt(helicopters.size()));
-			case 4: if(mechas.size() > 0) return mechas.get(rand.nextInt(mechas.size()));
+//			case 2: if(planes.size() > 0) return planes.get(rand.nextInt(planes.size()));
+//			case 3: if(helicopters.size() > 0) return helicopters.get(rand.nextInt(helicopters.size()));
+			case 2: if(mechas.size() > 0) return mechas.get(rand.nextInt(mechas.size()));
 		}
 		return null;
 	}
@@ -386,6 +383,14 @@ public class FlansModLootGenerator
 		for(int i = 0; i < 3 + rand.nextInt(3); i++)
 		{
 			ItemStack stack = getRandomAmmo(rand);
+			if(stack != null)
+			{
+				chest.setInventorySlotContents(rand.nextInt(chest.getSizeInventory()), stack);
+			}
+		}
+		for(int i = 0; i < 1 + rand.nextInt(3); i++)
+		{
+			ItemStack stack = getRandomUnloadedGun(rand);
 			if(stack != null)
 			{
 				chest.setInventorySlotContents(rand.nextInt(chest.getSizeInventory()), stack);

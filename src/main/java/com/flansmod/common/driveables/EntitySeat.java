@@ -1,7 +1,17 @@
 package com.flansmod.common.driveables;
 
-import java.util.List;
-
+import com.flansmod.api.IControllable;
+import com.flansmod.client.FlansModClient;
+import com.flansmod.common.FlansMod;
+import com.flansmod.common.RotatedAxes;
+import com.flansmod.common.guns.*;
+import com.flansmod.common.network.PacketDriveableKey;
+import com.flansmod.common.network.PacketDriveableKeyHeld;
+import com.flansmod.common.network.PacketPlaySound;
+import com.flansmod.common.network.PacketSeatUpdates;
+import com.flansmod.common.teams.TeamsManager;
+import com.flansmod.common.tools.ItemTool;
+import com.flansmod.common.vector.Vector3f;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -22,25 +32,7 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import com.flansmod.api.IControllable;
-import com.flansmod.client.FlansModClient;
-import com.flansmod.common.FlansMod;
-import com.flansmod.common.RotatedAxes;
-import com.flansmod.common.guns.BulletType;
-import com.flansmod.common.guns.EnumFireMode;
-import com.flansmod.common.guns.FireableGun;
-import com.flansmod.common.guns.FiredShot;
-import com.flansmod.common.guns.GunType;
-import com.flansmod.common.guns.ItemShootable;
-import com.flansmod.common.guns.ShootableType;
-import com.flansmod.common.guns.ShotHandler;
-import com.flansmod.common.network.PacketDriveableKey;
-import com.flansmod.common.network.PacketDriveableKeyHeld;
-import com.flansmod.common.network.PacketPlaySound;
-import com.flansmod.common.network.PacketSeatUpdates;
-import com.flansmod.common.teams.TeamsManager;
-import com.flansmod.common.tools.ItemTool;
-import com.flansmod.common.vector.Vector3f;
+import java.util.List;
 
 import static com.flansmod.common.PlayerHandler.floatingTickCount;
 
@@ -751,6 +743,24 @@ public class EntitySeat extends Entity implements IControllable, IEntityAddition
 					}
 				}
 				return true;
+			case 25:
+			{
+				EntitySeat[] vehicleSeats = driveable.getSeats();
+				EntitySeat playerSeat = getSeat(player);
+				EnumHand hand = player.getActiveHand();
+				if(vehicleSeats.length > (playerSeat.getExpectedSeatID() + 1))
+				{
+					int newSeatID = playerSeat.getExpectedSeatID() + 1;
+					EntitySeat newSeat = driveable.getSeat(newSeatID);
+					newSeat.processInitialInteract(player, hand);
+				}
+				else
+				{
+					EntitySeat newSeat = driveable.getSeat(0);
+					newSeat.processInitialInteract(player, hand);
+				}
+				return true;
+			}
 		}
 		return false;
 	}

@@ -1,5 +1,15 @@
 package com.flansmod.apocalypse.common;
 
+import com.flansmod.apocalypse.common.blocks.*;
+import com.flansmod.apocalypse.common.entity.*;
+import com.flansmod.apocalypse.common.world.BiomeApocalypse;
+import com.flansmod.apocalypse.common.world.WorldProviderApocalypse;
+import com.flansmod.apocalypse.common.world.buildings.WorldGenAbandonedPortal;
+import com.flansmod.apocalypse.common.world.buildings.WorldGenBossPillar;
+import com.flansmod.common.*;
+import com.flansmod.common.enchantments.GloveType;
+import com.flansmod.common.enchantments.ItemGlove;
+import com.flansmod.common.parts.PartType;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,8 +32,6 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.terraingen.DecorateBiomeEvent;
-import net.minecraftforge.event.terraingen.InitMapGenEvent.EventType;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -34,36 +42,11 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-
-import com.flansmod.apocalypse.common.blocks.BlockPowerCube;
-import com.flansmod.apocalypse.common.blocks.BlockStatic;
-import com.flansmod.apocalypse.common.blocks.BlockSulphur;
-import com.flansmod.apocalypse.common.blocks.BlockSulphuricAcid;
-import com.flansmod.apocalypse.common.blocks.TileEntityPowerCube;
-import com.flansmod.apocalypse.common.entity.EntityAIMecha;
-import com.flansmod.apocalypse.common.entity.EntitySkullDrone;
-import com.flansmod.apocalypse.common.entity.EntityFakePlayer;
-import com.flansmod.apocalypse.common.entity.EntityFlyByPlane;
-import com.flansmod.apocalypse.common.entity.EntityNukeDrop;
-import com.flansmod.apocalypse.common.entity.EntitySkullBoss;
-import com.flansmod.apocalypse.common.entity.EntitySurvivor;
-import com.flansmod.apocalypse.common.entity.EntityTeleporter;
-import com.flansmod.apocalypse.common.world.BiomeApocalypse;
-import com.flansmod.apocalypse.common.world.WorldProviderApocalypse;
-import com.flansmod.apocalypse.common.world.buildings.WorldGenAbandonedPortal;
-import com.flansmod.apocalypse.common.world.buildings.WorldGenBossPillar;
-import com.flansmod.common.BlockItemHolder;
-import com.flansmod.common.CreativeTabFlan;
-import com.flansmod.common.FlansMod;
-import com.flansmod.common.IFlansModContentProvider;
-import com.flansmod.common.ItemHolderType;
-import com.flansmod.common.enchantments.GloveType;
-import com.flansmod.common.enchantments.ItemGlove;
-import com.flansmod.common.parts.PartType;
 
 @Mod(modid = FlansModApocalypse.MODID, name = "Flan's Mod: Apocalypse", version = FlansModApocalypse.VERSION, acceptableRemoteVersions = "@ALLOWED_VERSIONS_APOCALYPSE@", dependencies = "required-after:" + FlansMod.MODID)
 //, guiFactory = "com.flansmod.client.gui.config.ModGuiFactory")
@@ -93,6 +76,8 @@ public class FlansModApocalypse implements IFlansModContentProvider
 	public static int AIRPORT_RARITY = 125;
 	public static int DYE_FACTORY_RARITY = 400;
 	public static int LAB_RARITY = 100;
+	public static boolean PLANE_ENABLED = false;
+	public static boolean SURVIVOR_SPAWN_OVERWORLD = false;
 
 	
 	// TODO: Configify
@@ -149,6 +134,12 @@ public class FlansModApocalypse implements IFlansModContentProvider
 		event.getRegistry().register(itemBlockSulphur);
 		event.getRegistry().register(itemBlockPowerCube);
 	}
+	
+	@Mod.EventHandler
+	public void onServerStarting(FMLServerStartingEvent event) {
+		event.registerServerCommand(new ReloadChestsCommand());
+	}
+
 	
 	@SubscribeEvent
 	public void registerBlocks(RegistryEvent.Register<Block> event)
@@ -355,6 +346,8 @@ public class FlansModApocalypse implements IFlansModContentProvider
 		ABANDONED_PORTAL_APOC_RARITY = configFile.getInt("Abandoned Portal Rarity (Apocalypse)", Configuration.CATEGORY_GENERAL, ABANDONED_PORTAL_APOC_RARITY, 1, Integer.MAX_VALUE, "Rarity of the abandoned portal structures in the apocalypse");
 		ABANDONED_PORTAL_OVERWORLD_RARITY = configFile.getInt("Abandoned Portal Rarity (Other Dimensions)", Configuration.CATEGORY_GENERAL, ABANDONED_PORTAL_OVERWORLD_RARITY, 1, Integer.MAX_VALUE, "Rarity of the abandoned portal structures in other dimensions");
 		RESPAWN_IN_APOC = configFile.getBoolean("Respawn in Apocalypse", Configuration.CATEGORY_GENERAL, RESPAWN_IN_APOC, "If false, players will return to their overworld spawn point");
+		PLANE_ENABLED = configFile.getBoolean("Plane flying overhead in the apocalypse dimension", Configuration.CATEGORY_GENERAL, PLANE_ENABLED, "If false, planes will not fly overhead in the apocalypse dimension.  Useful for lag.");
+		SURVIVOR_SPAWN_OVERWORLD = configFile.getBoolean("Survivors spawn in the overworld", Configuration.CATEGORY_GENERAL, SURVIVOR_SPAWN_OVERWORLD, "if true, survivors will spawn in the overworld.");
 		
 		if(configFile.hasChanged())
 			configFile.save();

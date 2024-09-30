@@ -1,24 +1,35 @@
-buildscript
-{
-    dependencies
-	{
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
-    }
-    repositories
-	{
-        jcenter()
-        maven
-		{
-			// location of the maven that hosts the forge files
-			name = "Forge maven"
-			url = "http://files.minecraftforge.net/maven"
+
+buildscript {
+    repositories {
+        maven {
+            name = "Forge maven"
+            url = "https://maven.minecraftforge.net/"
         }
+        mavenCentral()
+        jcenter() // Include JCenter to resolve any dependencies that may still rely on it
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT' // Forge plugin
+    }
+}
+
+// Apply Shadow plugin using the new method
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
+}
+
+repositories {
+    mavenCentral() // Ensure this is present
+    jcenter() // Add JCenter as well, in case some dependencies require it
+    maven {
+        name = "Forge maven"
+        url = "https://maven.minecraftforge.net/"
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.johnrengelman.shadow'
+
 
 version = version_major + "." + version_minor + "." + version_patch + version_extra
 group = "com.flansmod"

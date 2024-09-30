@@ -29,6 +29,12 @@ Instructions on how to build FlansMod are below
 	- Windows: `gradlew.bat build`
 1. Built files are found in the directory `./build/output`
 
+### Changes from the forked repo
+- Added the reload chest command that add flan item to existing chest. WoldGenVehicule generate a broken down land vehicule in the apocalypse dimension.  
+- Added the content of two pull request in the original repo:  one that fixed the sentry gun and the other one that added a key to switch seat in a vehicule. 
+- Added the configure option for flying plane spawning in the apocalypse dimension and for survivor spawning in the overworld.  
+- Changed the gradle file to take into account that jcenter doesn't exist anymore.
+
 
 This GitHub environment is to be treated maturely -- do not release any of this source code without prior
 permission from jamioflan.

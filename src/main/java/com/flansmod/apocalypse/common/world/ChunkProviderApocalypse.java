@@ -1,10 +1,8 @@
 package com.flansmod.apocalypse.common.world;
 
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
+import com.flansmod.apocalypse.common.FlansModApocalypse;
+import com.flansmod.apocalypse.common.world.buildings.*;
+import com.flansmod.common.ModuloHelper;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
@@ -18,25 +16,14 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
-import net.minecraft.world.gen.IChunkGenerator;
-import net.minecraft.world.gen.MapGenBase;
-import net.minecraft.world.gen.MapGenRavine;
-import net.minecraft.world.gen.NoiseGeneratorOctaves;
-import net.minecraft.world.gen.NoiseGeneratorPerlin;
+import net.minecraft.world.gen.*;
 import net.minecraft.world.gen.feature.WorldGenDungeons;
 import net.minecraft.world.gen.structure.MapGenMineshaft;
 
-import com.flansmod.apocalypse.common.FlansModApocalypse;
-import com.flansmod.apocalypse.common.world.buildings.MapGenAbandonedVillage;
-import com.flansmod.apocalypse.common.world.buildings.WorldGenAbandonedPortal;
-import com.flansmod.apocalypse.common.world.buildings.WorldGenBossPillar;
-import com.flansmod.apocalypse.common.world.buildings.WorldGenDeadTree;
-import com.flansmod.apocalypse.common.world.buildings.WorldGenDyeFactory;
-import com.flansmod.apocalypse.common.world.buildings.WorldGenResearchLab;
-import com.flansmod.apocalypse.common.world.buildings.WorldGenRoads;
-import com.flansmod.apocalypse.common.world.buildings.WorldGenRunway;
-import com.flansmod.apocalypse.common.world.buildings.WorldGenSkeleton;
-import com.flansmod.common.ModuloHelper;
+import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class ChunkProviderApocalypse implements IChunkGenerator
 {
@@ -68,6 +55,7 @@ public class ChunkProviderApocalypse implements IChunkGenerator
 	private WorldGenDyeFactory dyeFactoryGenerator = new WorldGenDyeFactory();
 	private WorldGenRunway runwayGenerator = new WorldGenRunway();
 	private WorldGenSkeleton skeletonGenerator = new WorldGenSkeleton();
+	private WorldGenVehicule vehiculeGenerator = new WorldGenVehicule();
 	private WorldGenRoads roadsGenerator = new WorldGenRoads();
 	private WorldGenBossPillar bossPillarGenerator = new WorldGenBossPillar();
 	private WorldGenDeadTree deadTreeGenerator = new WorldGenDeadTree();
@@ -435,6 +423,14 @@ public class ChunkProviderApocalypse implements IChunkGenerator
 			l1 = this.rand.nextInt(this.rand.nextInt(248) + 8);
 			i2 = this.rand.nextInt(16) + 8;
 			skeletonGenerator.generate(world, rand, blockpos.add(k1, l1, i2));
+		}
+		
+		if(rand.nextInt(FlansModApocalypse.VEHICLE_RARITY)==0)
+		{
+			k1 = this.rand.nextInt(16) + 8;
+			l1 = this.rand.nextInt(this.rand.nextInt(248) + 8);
+			i2 = this.rand.nextInt(16) + 8;
+			vehiculeGenerator.generate(world, rand, blockpos.add(k1, l1, i2));
 		}
 		
 		int xOrigin = ModuloHelper.divide(x, 4);
